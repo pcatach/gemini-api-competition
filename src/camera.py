@@ -16,7 +16,7 @@ class Camera:
     def is_open(self):
         return self.video_capture.isOpened()
 
-    def read_frame(self):
+    def read_frame(self) -> np.ndarray:
         returned, frame = self.video_capture.read()
         if not returned:
             raise OSError(f"Could not grab frames from device {VIDEO_CAPTURING_DEVICE_ID}")
