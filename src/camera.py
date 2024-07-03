@@ -6,6 +6,11 @@ from PIL import Image
 
 VIDEO_CAPTURING_DEVICE_ID = 0
 
+
+class FrameNotFoundError(Exception):
+    pass
+
+
 class Camera:
     def __init__(self):
         self.video_capture = cv2.VideoCapture(VIDEO_CAPTURING_DEVICE_ID)
@@ -19,12 +24,14 @@ class Camera:
     def read_frame(self) -> np.ndarray:
         returned, frame = self.video_capture.read()
         if not returned:
-            raise OSError(f"Could not grab frames from device {VIDEO_CAPTURING_DEVICE_ID}")
+            raise FrameNotFoundError(
+                f"Could not grab frames from device {VIDEO_CAPTURING_DEVICE_ID}"
+            )
         return frame
 
     def show_frame(self):
         frame = self.read_frame()
-        image = Image.fromarray(frame, 'RGB')
+        image = Image.fromarray(frame, "RGB")
         image.show()
 
     def show_feed(self):
