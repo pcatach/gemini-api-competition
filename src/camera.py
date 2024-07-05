@@ -1,5 +1,5 @@
 """
->> for frame in Camera():
+>> for frame in Camera().frames():
 >>     key = show_frame(frame)
 >>     if key == ord('q'):
 >>         break
@@ -46,7 +46,7 @@ class Camera:
     def __init__(self):
         self.video_capture = cv2.VideoCapture(VIDEO_CAPTURING_DEVICE_ID)
 
-    def __iter__(self) -> "Iterable[np.ndarray]":
+    def frames(self) -> "Iterable[np.ndarray]":
         while True:
             try:
                 yield self.read_frame()
