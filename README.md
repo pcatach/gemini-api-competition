@@ -49,14 +49,17 @@ Further thoughts:
 - Maybe always send a reference image (e.g. last frame) so that the LLM has a reference to compare the current image with ("what changed" is more relevant than "what you can see")
 - Possibility of using another model in conjunction to extract more features
 
-# First steps
+---
+
+## First steps
 
 Install the relevant packages under a python virtual environment:
 
 ```bash
-/path/to/gemini-api-competition $ python3 -m venv .venv
-/path/to/gemini-api-competition $ source .venv/bin/activate
-/path/to/gemini-api-competition $ pip install -r requirements.txt
+cd /path/to/gemini-api-competition
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
 As a quick test that we can use the api, generate your Google Cloud API token, save it under `.api_token` (or wherever you want, this is just a convenient place safe under `.gitignore`), and run
