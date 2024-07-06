@@ -67,3 +67,13 @@ As a quick test that we can use the api, generate your Google Cloud API token, s
 ```bash
 GOOGLE_API_KEY=$(cat .api_token) python hello_world.py
 ```
+
+To test the basic functionality of the model, use the `test_model.py` script e.g.
+
+```bash
+python test_model.py --model 1.5_flash --images /path/to/image.jpg /path/to/another_image.jpg --api_token $(cat .api_token)
+```
+
+TODO:
+- [ ] Fix bug with `1.5_pro`
+- [ ] Add method to use `1.0` to take a description and convert it to JSON (not sure if possible or useful, but 1.0 is cheaper)
