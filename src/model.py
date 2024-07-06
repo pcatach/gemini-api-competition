@@ -29,6 +29,10 @@ class ModelChoices(str, Enum):
         }
         return map_to_api_name[choice]
 
+    @classmethod
+    def values(cls):
+        return [c.value for c in cls]
+
 
 IMAGE_MIMETYPES = ["image/png", "image/jpeg", "image/webp", "image/heic", "image/heif"]
 
@@ -47,15 +51,12 @@ class Vehicle(typing.TypedDict):
     model: str
 
 
-ResponseSchema = typing.List[Person | Vehicle]
-
-
 class ModelAPI:
     """
     Basic Class for interfacing with Google's Gemini Models.
     """
 
-    DEFAULT_PROMPT = """
+    BASIC_PROMPT = """
     Enumerate and describe all the individuals and vehicles in this image. Wherever possible, say the individuals' clothing, and the vehicles color and model. 
     """
 
@@ -64,7 +65,7 @@ class ModelAPI:
       Person = {
         "clothes": str
       }
-    And this one for vehicles:
+    Use this JSON schema for vehicles:
       Vehicle = {
         "type": str,
         "color": str,
@@ -74,20 +75,22 @@ class ModelAPI:
     """
 
     def __init__(self, model_choice: ModelChoices):
-        self.prompt = self.DEFAULT_PROMPT
-
         # Set the relevant JSON response if using newest models
         config = {}
-        if "1.5" in model_choice:
+        if model_choice == ModelChoices.FLASH:
             config["response_mime_type"] = "application/json"
-            if model_choice == ModelChoices.PRO:
-                config["response_schema"] = ResponseSchema
-            else:
-                self.prompt += self.JSON_PROMPT
-        else:
-            self.prompt += self.JSON_PROMPT
+            self.default_prompt = self.BASIC_PROMPT + self.JSON_PROMPT
+        elif model_choice == ModelChoices.PRO:
+            # formal response schema declaration is supposed to work better
+            config["response_mime_type"] = "application/json"
+            config["response_schema"] = typing.List[Person | Vehicle]
+            self.default_prompt = self.BASIC_PROMPT + self.JSON_PROMPT
+        else:  # 1.0 cannot process images
+            raise ValueError(
+                "Model geminio 1.0 cannot read images, so not supproted yet"
+            )
 
-        self.model = genai.GenerativeModel(
+        self._model = genai.GenerativeModel(
             ModelChoices.api_name(model_choice), generation_config=config
         )
         self.uploaded_files = []
@@ -113,8 +116,8 @@ class ModelAPI:
             )
 
         # Recommendation is to place prompt after image if using a single image
-        prompt = prompt or self.DEFAULT_PROMPT
-        response = self.model.generate_content([uploaded_file, prompt])
+        prompt = prompt or self.default_prompt
+        response = self._model.generate_content([uploaded_file, prompt])
 
         return uploaded_file, response.text
 
