@@ -7,8 +7,6 @@
 >> camera = Camera()
 >> camera.show_feed()
 """
-
-
 import time
 
 import cv2

@@ -5,10 +5,12 @@ See e.g. list(genai.list_models()) for a comprehensive list.
 """
 
 import mimetypes
+import typing_extensions as typing
 from enum import Enum
 
 import google.generativeai as genai
-import typing_extensions as typing
+
+from src.utils import convert_frame_to_blob
 
 
 class ModelChoices(str, Enum):
@@ -57,7 +59,7 @@ class ModelAPI:
     """
 
     BASIC_PROMPT = """
-    Enumerate and describe all the individuals and vehicles in this image. Wherever possible, say the individuals' clothing, and the vehicles color and model. 
+    Enumerate and describe all the individuals and vehicles in this image. Wherever possible, say the individuals' clothing, and the vehicles color and model.
     """
 
     JSON_PROMPT = """
@@ -95,9 +97,10 @@ class ModelAPI:
         )
         self.uploaded_files = []
 
-    def describe_image(self, image_path, prompt=None, verbose=False):
+    def describe_image_from_path(self, image_path, prompt=None, verbose=False):
         """
-        Describes image using Google's model. Keeps pointer to image uploaded in object's cache
+        Describes image using Google's model given a file path.
+        Keeps pointer to image uploaded in object's cache.
 
         :param image_path: str: path for image
         :param prompt: str: prompt for the model. model-dependent default set by class and __init__
@@ -120,6 +123,22 @@ class ModelAPI:
         response = self._model.generate_content([uploaded_file, prompt])
 
         return uploaded_file, response.text
+
+    def describe_image_from_array(self, array, prompt=None):
+        """
+        Describes image using Google's model given a numpy array
+        representing a PNG image.
+
+        :param frame: np.ndarray: array representing a PNG image
+        :param prompt: str: prompt for the model. model-dependent default set by class and __init__
+
+        :return: model response
+        """
+        blob = convert_frame_to_blob(array)
+        response = self._model.generate_content([blob])
+
+        return response.text
+
 
     def clear_uploads(self):
         """
