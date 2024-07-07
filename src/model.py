@@ -53,6 +53,13 @@ class Vehicle(typing.TypedDict):
     model: str
 
 
+class Scene(typing.TypedDict):
+    "JSON schema for a scene composed of persons and vehicles"
+
+    persons: typing.List[Person]
+    vehicles: typing.List[Vehicle]
+
+
 class ModelAPI:
     """
     Basic Class for interfacing with Google's Gemini Models.
@@ -85,11 +92,11 @@ class ModelAPI:
         elif model_choice == ModelChoices.PRO:
             # formal response schema declaration is supposed to work better
             config["response_mime_type"] = "application/json"
-            config["response_schema"] = typing.List[Person | Vehicle]
+            config["response_schema"] = Scene
             self.default_prompt = self.BASIC_PROMPT + self.JSON_PROMPT
         else:  # 1.0 cannot process images
             raise ValueError(
-                "Model geminio 1.0 cannot read images, so not supproted yet"
+                "Model Gemini 1.0 cannot read images, so not supproted yet"
             )
 
         self._model = genai.GenerativeModel(
@@ -135,10 +142,9 @@ class ModelAPI:
         :return: model response
         """
         blob = convert_frame_to_blob(array)
-        response = self._model.generate_content([blob])
+        response = self._model.generate_content([blob, prompt])
 
         return response.text
-
 
     def clear_uploads(self):
         """
