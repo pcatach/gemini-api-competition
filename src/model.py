@@ -10,8 +10,6 @@ from enum import Enum
 
 import google.generativeai as genai
 
-from src.utils import convert_frame_to_blob
-
 
 class ModelChoices(str, Enum):
     "Supported models"
@@ -131,18 +129,18 @@ class ModelAPI:
 
         return uploaded_file, response.text
 
-    def describe_image_from_array(self, array, prompt=None):
+    def describe_image_from_blob(self, image_blob, prompt=None):
         """
-        Describes image using Google's model given a numpy array
+        Describes image using Google's model given a blob object
         representing a PNG image.
 
-        :param frame: np.ndarray: array representing a PNG image
+        :param image_blob: genai.protos.Blob: Blob representing a PNG image
         :param prompt: str: prompt for the model. model-dependent default set by class and __init__
 
         :return: model response
         """
-        blob = convert_frame_to_blob(array)
-        response = self._model.generate_content([blob, prompt])
+        prompt = prompt or self.default_prompt
+        response = self._model.generate_content([image_blob, prompt])
 
         return response.text
 
