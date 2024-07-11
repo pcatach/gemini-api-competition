@@ -9,6 +9,7 @@ Module for interacting with the video capturing device.
 >> camera = Camera()
 >> camera.show_feed()
 """
+
 import time
 
 import cv2
@@ -92,7 +93,7 @@ class Camera:
             cv2.imshow("feed", frame)
 
             key = cv2.waitKey(100)
-            if key == ord('q'):
+            if key == ord("q"):
                 break
         cv2.destroyWindow("feed")
         cv2.waitKey(1)

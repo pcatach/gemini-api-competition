@@ -4,11 +4,16 @@ Module for interacting with Google's Gemini models.
 See e.g. list(genai.list_models()) for a comprehensive list.
 """
 
+import json
 import mimetypes
-import typing_extensions as typing
 from enum import Enum
 
 import google.generativeai as genai
+
+
+from src.schemas import Scene
+
+IMAGE_MIMETYPES = ["image/png", "image/jpeg", "image/webp", "image/heic", "image/heif"]
 
 
 class ModelChoices(str, Enum):
@@ -34,31 +39,7 @@ class ModelChoices(str, Enum):
         return [c.value for c in cls]
 
 
-IMAGE_MIMETYPES = ["image/png", "image/jpeg", "image/webp", "image/heic", "image/heif"]
-
-
-class Person(typing.TypedDict):
-    "JSON schema for person information"
-
-    clothes: str
-
-
-class Vehicle(typing.TypedDict):
-    "JSON schema for vehicle information"
-
-    type: str
-    color: str
-    model: str
-
-
-class Scene(typing.TypedDict):
-    "JSON schema for a scene composed of persons and vehicles"
-
-    persons: typing.List[Person]
-    vehicles: typing.List[Vehicle]
-
-
-class ModelAPI:
+class Model:
     """
     Basic Class for interfacing with Google's Gemini Models.
     """
@@ -151,3 +132,12 @@ class ModelAPI:
         for file in self.uploaded_files:
             genai.delete_file(file.name)
         self.uploaded_files = []
+
+    @staticmethod
+    def parse_json(maybe_json):
+        try:
+            parsed_json = json.loads(maybe_json)
+            return parsed_json
+        except ValueError as e:
+            print(f"{e}: Not a JSON, you might want to check it properly..")
+            return None

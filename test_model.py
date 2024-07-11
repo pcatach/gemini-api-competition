@@ -8,7 +8,7 @@ import argparse
 import google.generativeai as genai
 
 from src.camera import Camera, show_frame
-from src.model import ModelAPI, ModelChoices
+from src.model import Model, ModelChoices
 from src.utils import convert_frame_to_blob
 
 
@@ -57,7 +57,7 @@ def main():
     args = parse_args()
 
     genai.configure(api_key=args.api_token)
-    model = ModelAPI(args.model)
+    model = Model(args.model)
 
     if args.images:
         describe_from_paths(args.images, model)
