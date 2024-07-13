@@ -1,4 +1,6 @@
 """
+Module for interacting with the video capturing device.
+
 >> for frame in Camera().frames():
 >>     key = show_frame(frame)
 >>     if key == ord('q'):
