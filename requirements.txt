@@ -1,13 +1,6 @@
 google-generativeai==0.7.0
 opencv-python==4.10.0.84
 pillow==10.4.0
-<<<<<<< HEAD
-<<<<<<< HEAD
 Twisted==24.3.0
-=======
 pymongo=4.8.0
->>>>>>> 1803daf (Add MongoClient with insert method)
-=======
-pymongo==4.8.0
 pydantic==2.7.4
->>>>>>> 605d3b3 (Add --db to test_model.py, fix parsing bug, run black formatting)
