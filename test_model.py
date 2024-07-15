@@ -6,10 +6,12 @@ TODO: make a proper test out of this
 
 import argparse
 import google.generativeai as genai
+import json
 
 from src.camera import Camera, show_frame
 from src.model import Model, ModelChoices
 from src.utils import convert_frame_to_blob
+from src.mongo_client import MongoClient, Scene
 
 
 def parse_args():
@@ -18,6 +20,7 @@ def parse_args():
         "--model", type=ModelChoices, choices=ModelChoices.values(), required=True
     )
     parser.add_argument("--api_token", type=str, required=True)
+    parser.add_argument("--db", action="store_true")
 
     mutually_exclusive_group = parser.add_mutually_exclusive_group(required=True)
     mutually_exclusive_group.add_argument("--images", type=str, nargs="+", default=None)
@@ -25,24 +28,31 @@ def parse_args():
 
     return parser.parse_args()
 
+
 def describe_from_paths(image_paths, model):
-    print("\n---------------\n")
+    responses = []
+    print("---------------")
     for i, image_path in enumerate(image_paths):
         _, json = model.describe_image_from_path(image_path, verbose=True)
-        print(i)
+        print(f"({i}) ")
         print(json)
-        print("\n---------------\n")
+        print("---------------")
+        responses.append(json)
+
+    return responses
+
 
 def describe_from_live_feed(model):
     camera = Camera()
+    responses = []
     for frame in camera.frames():
         print("Press 'y' to send picture go Gemini, 'n' to retake or 'q' to quit")
         key = show_frame(frame)
-        if key == ord('q'):
+        if key == ord("q"):
             break
-        elif key == ord('n'):
+        elif key == ord("n"):
             continue
-        elif key == ord('y'):
+        elif key == ord("y"):
             pass
         else:
             raise ValueError("Invalid input.")
@@ -50,7 +60,19 @@ def describe_from_live_feed(model):
         blob = convert_frame_to_blob(frame)
         json = model.describe_image_from_blob(blob)
         print(json)
+        responses.append(json)
 
+    return responses
+
+
+def database_responses(responses, db_uri):
+    client = MongoClient(uri=db_uri)
+    for res in responses:
+        scene = Scene(json.loads(res))
+        for key in Scene.__required_keys__:
+            if key not in scene:
+                scene[key] = []
+        client.insert_scene(scene)
 
 
 def main():
@@ -59,13 +81,23 @@ def main():
     genai.configure(api_key=args.api_token)
     model = Model(args.model)
 
+    responses = []
     if args.images:
-        describe_from_paths(args.images, model)
+        responses = describe_from_paths(args.images, model)
     elif args.live:
-        describe_from_live_feed(model)
+        responses = describe_from_live_feed(model)
+
+    if args.db:
+        try:
+            database_responses(responses)
+        except Exception as e:
+            print(f"Could not insert responses to database: {e}")
+        else:
+            print("Successful insertion of responses to database.")
 
     print("Clearing uploads..")
     model.clear_uploads()
+
 
 if __name__ == "__main__":
     main()

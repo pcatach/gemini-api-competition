@@ -20,7 +20,7 @@ class MongoClient:
     def __init__(self, uri="mongodb://localhost:27017/"):
         self._client = PymongoClient(uri)
 
-    def insert(self, scene, timestamp=None, db=None, collection=None):
+    def insert_scene(self, scene, timestamp=None, db=None, collection=None):
         """
         Insert a scene as captured by model into database
 
@@ -37,7 +37,7 @@ class MongoClient:
         timestamp = timestamp or datetime.now(tz=timezone.utc)
 
         # Pydantic performs validation cehck for us
-        document = MongoDocument(scene, timestamp)
+        document = MongoDocument(scene=scene, timestamp=timestamp)
 
         res = self._client[db][collection].insert_one(document.dict())
         return res

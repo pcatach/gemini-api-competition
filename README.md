@@ -74,6 +74,8 @@ To test the basic functionality of the model, use the `test_model.py` script e.g
 python test_model.py --model 1.5_flash --images /path/to/image.jpg /path/to/another_image.jpg --api_token $(cat .api_token)
 ```
 
+If one has a MongoDB instance running (perhaps through `sudo systemctl start mongodb`), the flag `--db` stores the results from the model to that database after computing all the model responses (Not intended for production as it's not online, just for testing).
+
 TODO:
-- [ ] Fix bug with `1.5_pro`
+- [ ] Write twisted server that manages reactive logic online
 - [ ] Add method to use `1.0` to take a description and convert it to JSON (not sure if possible or useful, but 1.0 is cheaper)
