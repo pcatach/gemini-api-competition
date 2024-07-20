@@ -77,5 +77,6 @@ python test_model.py --model 1.5_flash --images /path/to/image.jpg /path/to/anot
 If one has a MongoDB instance running (perhaps through `sudo systemctl start mongodb`), the flag `--db` stores the results from the model to that database after computing all the model responses (Not intended for production as it's not online, just for testing).
 
 TODO:
-- [ ] Write twisted server that manages reactive logic online
+
+- [ ] Write event loop + server
 - [ ] Add method to use `1.0` to take a description and convert it to JSON (not sure if possible or useful, but 1.0 is cheaper)

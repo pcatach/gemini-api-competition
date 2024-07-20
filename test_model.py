@@ -46,7 +46,7 @@ def describe_from_live_feed(model):
     camera = Camera()
     responses = []
     for frame in camera.frames():
-        print("Press 'y' to send picture go Gemini, 'n' to retake or 'q' to quit")
+        print("Press 'y' to send picture to Gemini, 'n' to retake or 'q' to quit")
         key = show_frame(frame)
         if key == ord("q"):
             break
@@ -65,7 +65,7 @@ def describe_from_live_feed(model):
     return responses
 
 
-def database_responses(responses, db_uri):
+def database_responses(responses, db_uri=None):
     client = MongoClient(uri=db_uri)
     for res in responses:
         scene = Scene(json.loads(res))

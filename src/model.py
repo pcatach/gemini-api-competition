@@ -10,7 +10,6 @@ from enum import Enum
 
 import google.generativeai as genai
 
-
 from src.schemas import Scene
 
 IMAGE_MIMETYPES = ["image/png", "image/jpeg", "image/webp", "image/heic", "image/heif"]
@@ -72,6 +71,7 @@ class Model:
             # formal response schema declaration is supposed to work better
             config["response_mime_type"] = "application/json"
             config["response_schema"] = Scene
+            # for PRO should work without JSON_PROMPT in fact
             self.default_prompt = self.BASIC_PROMPT + self.JSON_PROMPT
         else:  # 1.0 cannot process images
             raise ValueError(

@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+
 from pydantic import BaseModel as PydanticModel
 from pymongo import MongoClient as PymongoClient
 
@@ -17,7 +18,9 @@ class MongoClient:
     default_db = "cctv_logger"
     default_collection = "camera0"
 
-    def __init__(self, uri="mongodb://localhost:27017/"):
+    def __init__(self, uri=None):
+        if uri is None:
+            uri = "mongodb://localhost:27017/"
         self._client = PymongoClient(uri)
 
     def insert_scene(self, scene, timestamp=None, db=None, collection=None):
