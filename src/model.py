@@ -22,14 +22,14 @@ class ModelChoices(str, Enum):
     FLASH = "1.5_flash"
     PRO = "1.5_pro"
 
-    @staticmethod
-    def api_name(choice):
-        "Converts convenient enum string to api-readable string"
+    @classmethod
+    def api_name(cls, choice):
+        """Converts convenient enum string to api-readable string"""
 
         map_to_api_name = {
-            "1.0": "gemini-1.0-pro-latest",
-            "1.5_flash": "gemini-1.5-flash",
-            "1.5_pro": "gemini-1.5-pro",
+            cls.ONE: "gemini-1.0-pro-latest",
+            cls.FLASH: "gemini-1.5-flash",
+            cls.PRO: "gemini-1.5-pro",
         }
         return map_to_api_name[choice]
 
@@ -75,7 +75,7 @@ class Model:
             self.default_prompt = self.BASIC_PROMPT + self.JSON_PROMPT
         else:  # 1.0 cannot process images
             raise ValueError(
-                "Model Gemini 1.0 cannot read images, so not supproted yet"
+                "Model Gemini 1.0 cannot read images, so not supproted yet."
             )
 
         self._model = genai.GenerativeModel(
@@ -83,7 +83,7 @@ class Model:
         )
         self.uploaded_files = []
 
-    def describe_image_from_path(self, image_path, prompt=None, verbose=False):
+    def describe_image_from_path(self, image_path, prompt="", verbose=False):
         """
         Describes image using Google's model given a file path.
         Keeps pointer to image uploaded in object's cache.
@@ -101,7 +101,7 @@ class Model:
         self.uploaded_files.append(uploaded_file)
         if verbose:
             print(
-                f"Uploaded file '{uploaded_file.display_name}' as: {uploaded_file.uri}"
+                f"Uploaded file '{uploaded_file.display_name}' as: {uploaded_file.uri}."
             )
 
         # Recommendation is to place prompt after image if using a single image
@@ -110,7 +110,7 @@ class Model:
 
         return uploaded_file, response.text
 
-    def describe_image_from_blob(self, image_blob, prompt=None):
+    def describe_image_from_blob(self, image_blob, prompt=""):
         """
         Describes image using Google's model given a blob object
         representing a PNG image.
@@ -139,5 +139,5 @@ class Model:
             parsed_json = json.loads(maybe_json)
             return parsed_json
         except ValueError as e:
-            print(f"{e}: Not a JSON, you might want to check it properly..")
+            print(f"{e}: Not a JSON, you might want to check it properly.")
             return None
