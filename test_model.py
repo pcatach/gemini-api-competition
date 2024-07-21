@@ -65,10 +65,12 @@ def describe_from_live_feed(model):
     return responses
 
 
-def database_responses(responses, db_uri=None):
+def insert_database_responses(responses, db_uri=None):
     client = MongoClient(uri=db_uri)
     for res in responses:
         scene = Scene(json.loads(res))
+        # workaround when response is missing parts
+        # parts of the schema
         for key in Scene.__required_keys__:
             if key not in scene:
                 scene[key] = []
@@ -89,14 +91,15 @@ def main():
 
     if args.db:
         try:
-            database_responses(responses)
+            insert_database_responses(responses)
         except Exception as e:
             print(f"Could not insert responses to database: {e}")
         else:
             print("Successful insertion of responses to database.")
 
-    print("Clearing uploads..")
-    model.clear_uploads()
+    if args.images:
+        print("Clearing uploads..")
+        model.clear_uploads()
 
 
 if __name__ == "__main__":

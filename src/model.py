@@ -97,8 +97,8 @@ class Model:
         mime, _ = mimetypes.guess_type(image_path)
         assert mime in IMAGE_MIMETYPES, f"Unsupported filetype: {mime}"
 
-        # Upload the file, save name to   and print a confirmation.
         uploaded_file = genai.upload_file(path=image_path)
+        self.uploaded_files.append(uploaded_file)
         if verbose:
             print(
                 f"Uploaded file '{uploaded_file.display_name}' as: {uploaded_file.uri}"
