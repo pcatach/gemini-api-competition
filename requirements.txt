@@ -4,3 +4,4 @@ pillow==10.4.0
 pymongo==4.8.0
 pydantic==2.7.4
 black==24.4.2
+Twisted==24.3.0

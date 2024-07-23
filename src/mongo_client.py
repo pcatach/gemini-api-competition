@@ -19,8 +19,7 @@ class MongoClient:
     default_collection = "camera0"
 
     def __init__(self, uri=None):
-        if uri is None:
-            uri = "mongodb://localhost:27017/"
+        uri = uri or "mongodb://localhost:27017/"
         self._client = PymongoClient(uri)
 
     def insert_scene(self, scene, timestamp=None, db=None, collection=None):
@@ -39,7 +38,7 @@ class MongoClient:
         collection = collection or self.default_collection
         timestamp = timestamp or datetime.now(tz=timezone.utc)
 
-        # Pydantic performs validation cehck for us
+        # Pydantic performs validation for us
         document = MongoDocument(scene=scene, timestamp=timestamp)
 
         res = self._client[db][collection].insert_one(document.dict())

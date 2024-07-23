@@ -76,7 +76,15 @@ python test_model.py --model 1.5_flash --images /path/to/image.jpg /path/to/anot
 
 If one has a MongoDB instance running (perhaps through `sudo systemctl start mongodb`), the flag `--db` stores the results from the model to that database after computing all the model responses (Not intended for production as it's not online, just for testing).
 
+## Running the application
+
+We use the [Twisted Application Framework](https://docs.twisted.org/en/stable/core/howto/application.html) as our engine. To run the application, you will have to specify the full path to your virtual environment:
+
+$ GOOGLE_API_KEY=$(cat .api_token) /path/to/.venv/bin/twistd --python twistd.py --nodaemon
+
 TODO:
 
-- [ ] Write event loop + server
+- [ ] Write service that takes picture, sends to model, stores in the db
+- [ ] Write service that replies to HTTP requests
+- [ ] Write client
 - [ ] Add method to use `1.0` to take a description and convert it to JSON (not sure if possible or useful, but 1.0 is cheaper)
