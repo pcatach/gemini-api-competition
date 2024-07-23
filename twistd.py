@@ -29,7 +29,9 @@ sys.path.append(".")
 from twisted.application import internet, service
 from twisted.python import log
 
-from src.service import CCTVLoggerServiceAdaptor, TIME_INTERVAL
+from src.service import CCTVLoggerServiceAdaptor
+
+TIME_INTERVAL = 40
 
 logging.basicConfig(level=logging.INFO)
 

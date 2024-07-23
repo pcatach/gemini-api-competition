@@ -4,7 +4,6 @@ from src.camera import Camera
 from src.model import Model, ModelChoices
 from src.utils import convert_frame_to_blob
 
-TIME_INTERVAL = 40
 LOG = logging.getLogger("cctv_logger")
 
 
