@@ -1,5 +1,12 @@
-.venv
+# Application
 .api_token
-pyrightconfig.json
 
+# Backend
+.DS_Store
+.venv
+pyrightconfig.json
+.ruff_cache
 *.pyc
+
+# Frontend
+node_modules

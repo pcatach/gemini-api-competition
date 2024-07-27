@@ -1,7 +1,10 @@
+import json
 import logging
 
 from src.camera import Camera
 from src.model import Model, ModelChoices
+from src.mongo_client import MongoClient
+from src.schemas import Scene
 from src.utils import convert_frame_to_blob
 
 LOG = logging.getLogger("cctv_logger")
@@ -21,6 +24,7 @@ class CCTVLoggerRunner:
     def __init__(self):
         self.model = Model(ModelChoices.PRO)
         self.camera = Camera()
+        self.client = MongoClient()
 
     def run(self):
         LOG.info("Sending picture...")
@@ -29,4 +33,10 @@ class CCTVLoggerRunner:
         response = self.model.describe_image_from_blob(blob)
         LOG.info("Response:")
         LOG.info(response)
+
+        scene = Scene(json.loads(response))
+        for key in Scene.__required_keys__:
+            if key not in scene:
+                scene[key] = []
+        self.client.insert_scene(scene)
         # ...
