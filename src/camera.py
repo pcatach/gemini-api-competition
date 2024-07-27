@@ -9,9 +9,6 @@ Module for interacting with the video capturing device.
 >> camera = Camera()
 >> camera.show_feed()
 """
-
-import time
-
 import cv2
 import numpy as np
 

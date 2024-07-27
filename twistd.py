@@ -28,8 +28,9 @@ sys.path.append(".")
 
 from twisted.application import internet, service
 from twisted.python import log
+from twisted.web import server
 
-from src.service import CCTVLoggerServiceAdaptor
+from src.services import CCTVLoggerRunner, CCTVLoggerServer
 
 TIME_INTERVAL = 40
 
@@ -38,15 +39,16 @@ logging.basicConfig(level=logging.INFO)
 top_service = service.MultiService()
 
 # service to take logs
-cctv_logger_adaptor = CCTVLoggerServiceAdaptor()
+cctv_logger_runner = CCTVLoggerRunner()
 cctv_logger_service = internet.TimerService(
-    step=TIME_INTERVAL, callable=cctv_logger_adaptor.run
+    step=TIME_INTERVAL, callable=cctv_logger_runner.run
 )
 cctv_logger_service.setServiceParent(top_service)
 
 # service to listen for connections
-# tcp_service = internet.TCPServer(...)
-# tcp_service.setServiceParent(top_service)
+cctv_logger_server = server.Site(CCTVLoggerServer())
+tcp_service = internet.TCPServer(8080, cctv_logger_server)
+tcp_service.setServiceParent(top_service)
 
 application = service.Application("cctv_logger")
 top_service.setServiceParent(application)

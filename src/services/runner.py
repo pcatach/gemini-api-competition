@@ -7,15 +7,15 @@ from src.utils import convert_frame_to_blob
 LOG = logging.getLogger("cctv_logger")
 
 
-class CCTVLoggerServiceAdaptor:
-    """The adaptor integrates the logic for:
+class CCTVLoggerRunner:
+    """The runner integrates the logic for:
     1. Taking a picture with the camera
     2. Sending it to the model
     3. Persisting the response to the database
 
     It must implement a run() method that will be invoked
     by the twisted service, for instance
-    internet.TimerService(step=30, callable = adaptor.run)
+    internet.TimerService(step=30, callable=runner.run)
     """
 
     def __init__(self):
