@@ -65,13 +65,13 @@ pip install -r requirements.txt
 As a quick test that we can use the api, generate your Google Cloud API token, save it under `.api_token` (or wherever you want, this is just a convenient place safe under `.gitignore`), and run
 
 ```bash
-GOOGLE_API_KEY=$(cat .api_token) python hello_world.py
+$ GOOGLE_API_KEY=$(cat .api_token) python hello_world.py
 ```
 
 To test the basic functionality of the model, use the `test_model.py` script e.g.
 
 ```bash
-python test_model.py --model 1.5_flash --images /path/to/image.jpg /path/to/another_image.jpg --api_token $(cat .api_token)
+$ python test_model.py --model 1.5_flash --images /path/to/image.jpg /path/to/another_image.jpg --api_token $(cat .api_token)
 ```
 
 If one has a MongoDB instance running (perhaps through `sudo systemctl start mongodb`), the flag `--db` stores the results from the model to that database after computing all the model responses (Not intended for production as it's not online, just for testing).
@@ -80,7 +80,9 @@ If one has a MongoDB instance running (perhaps through `sudo systemctl start mon
 
 We use the [Twisted Application Framework](https://docs.twisted.org/en/stable/core/howto/application.html) as our engine. To run the application, you will have to specify the full path to your virtual environment:
 
+```bash
 $ GOOGLE_API_KEY=$(cat .api_token) /path/to/.venv/bin/twistd --python twistd.py --nodaemon
+```
 
 TODO:
 
