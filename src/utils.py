@@ -1,3 +1,4 @@
+from collections import Counter
 from datetime import datetime, timezone
 
 import cv2
@@ -16,4 +17,23 @@ def today_start():
 
 
 def sanitise_string(s):
-    return s.replace("t-", "").replace("and ", "")
+    return s.replace("t-", "t").replace(" and ", ", ").replace("a ", "")
+
+
+def summarise_scenes(scenes):
+    """
+    Returns a tuple with summarised persons and vehicles for collection of scenes.
+    """
+
+    persons = Counter()
+    vehicles = Counter()
+    for scene in scenes:
+        persons += Counter(
+            (p.get("gender"), sanitise_string(p.get("clothes")))
+            for p in scene.get("persons")
+        )
+        vehicles += Counter(
+            (v.get("type"), v.get("color")) for v in scene.get("vehicles")
+        )
+
+    return persons, vehicles
