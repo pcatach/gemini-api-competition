@@ -44,21 +44,31 @@ class Model:
     """
 
     BASIC_PROMPT = """
-    Enumerate and describe all the individuals and vehicles in this image. Wherever possible, say the individuals' clothing, and the vehicles color and model.
+    First, describe an overview of the scene in this image, giving a brief description of what can be accurately determined on the weather and a succint summary of the scene, with important landmarks. Then, enumerate and describe all the individuals and vehicles present. Wherever possible, say the individuals' clothing, and the vehicles color and type, as precise and accurate as possible.
     """
 
     JSON_PROMPT = """
+    Using this JSON schema for the environment:
+      Environment = {
+        "weather": str,
+        "summary": str,
+      }
     Use this JSON schema for individuals:
       Person = {
-        "clothes": str
+        "clothes": str,
+        "gender": typing.Literal["male", "female", "unsure"]
       }
     Use this JSON schema for vehicles:
       Vehicle = {
         "type": str,
         "color": str,
-        "model": str,
       }
-    Return a `list[Person|Vehicle]`
+    Return a dictionary as follows:
+    {
+      'environment': Environment
+      'persons': typing.List[Person]
+      'vehicles': typing.List[Vehicle]
+    }
     """
 
     def __init__(self, model_choice: ModelChoices):
@@ -71,8 +81,8 @@ class Model:
             # formal response schema declaration is supposed to work better
             config["response_mime_type"] = "application/json"
             config["response_schema"] = Scene
-            # for PRO should work without JSON_PROMPT in fact
-            self.default_prompt = self.BASIC_PROMPT + self.JSON_PROMPT
+            # model PRO works without JSON_PROMPT due to config response_schema above
+            self.default_prompt = self.BASIC_PROMPT
         else:  # 1.0 cannot process images
             raise ValueError(
                 "Model Gemini 1.0 cannot read images, so not supproted yet."
