@@ -45,9 +45,10 @@ class MongoClient:
 
         order = -1 if reverse else 1
         res = db_collection.find_one(sort={"timestamp": order}) or {}
-        if verbose:
-            return res.get("scene"), res.get("timestamp")
-        return res.get("scene")
+        return {
+            "scene": res.get("scene"),
+            "timestamp": res.get("timestamp")
+        }
 
     def get_first_scene(self, db=None, collection=None, verbose=False):
         """

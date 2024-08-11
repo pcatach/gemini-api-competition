@@ -1,11 +1,13 @@
+import datetime
+
 import typing_extensions as typing
 
 
 class Person(typing.TypedDict):
     "JSON schema for person information"
 
-    clothes: str
-    gender: typing.Literal["male", "female", "unsure"]
+    clothes: str | None
+    gender: typing.Literal["male", "female", "unsure"] | None
 
 
 class Vehicle(typing.TypedDict):
@@ -28,3 +30,7 @@ class Scene(typing.TypedDict):
     environment: Environment
     persons: typing.List[Person]
     vehicles: typing.List[Vehicle]
+
+class Output(typing.TypedDict):
+    scene: Scene
+    timestamp: datetime.datetime

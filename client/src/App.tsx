@@ -1,68 +1,115 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 
-type Person = { clothes: string };
-type Vehicle = { type: string; color: string; model: string };
-type Scene = { persons: Person[]; vehicles: Vehicle[] };
+type Person = { clothes: string; gender: "male" | "female" | "unsure" };
+type Vehicle = { type: string; color: string };
+type Environment = { weather: string; summary: string };
+type Scene = {
+  persons: Person[];
+  vehicles: Vehicle[];
+  environment: Environment;
+};
+type SceneData = {
+  scene: Scene;
+  timestamp: string;
+};
 
-function SceneCard({ scene }: { scene: Scene }) {
-  return (
-    <>
-      <div className="scene-card">
-        <div className="scene-card-title">Scene contents:</div>
-        <div className="scene-card-content">
-          <strong>People: </strong>
-          {scene.persons.length}
-          <div>
-            {scene.persons.length > 0 &&
-              scene.persons.map((person, i) => (
-                <div key={i} className="scene-card-person">
-                  <div> clothes: {person.clothes}</div>
-                </div>
-              ))}
-          </div>
-        </div>
-        <div className="scene-card-content">
-          <strong>Vehicles: </strong>
-          {scene.vehicles.length}
-          <div>
-            {scene.vehicles.length > 0 &&
-              scene.vehicles.map((vehicle, i) => (
-                <div key={i} className="scene-card-vehicle">
-                  <div> Type: {vehicle.type} </div>
-                  <div> Model: {vehicle.model} </div>
-                  <div> Color: {vehicle.color} </div>
-                </div>
-              ))}
-          </div>
-        </div>
-      </div>
-    </>
-  );
+function capitalizeFirstLetter(text: string) {
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 }
 
-function SceneLog({ scenes }: { scenes: Scene[] }) {
+function SceneCard({
+  sceneData,
+  visible,
+}: {
+  sceneData: SceneData;
+  visible: boolean;
+}) {
+  const scene = sceneData.scene;
+  const timestamp = new Date(sceneData.timestamp);
+
   return (
     <>
-      <div className="scene-log">
-        {scenes.map((scene, i) => {
-          return <SceneCard key={i} scene={scene} />;
-        })}
+      <div className={`scene-card ${visible ? "visible" : ""}`}>
+        <div className="scene-card-timestamp">
+          {timestamp.toLocaleDateString("en-GB", {
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+          })}
+        </div>
+        <div className="scene-card-title">Scene description:</div>
+        <div className="scene-card-environment">
+          <strong>🌦️ Environment: </strong>
+          <div>
+            <div className="scene-card-summary">
+              {scene.environment.summary}
+            </div>
+            <div className="scene-card-weather">
+              Weather: {scene.environment.weather}
+            </div>
+          </div>
+        </div>
+        <div className="scene-card-contents">
+          <div className="scene-card-people">
+            <strong>🧍 People: </strong>
+            {scene.persons.length}
+            <div>
+              {scene.persons.length > 0 &&
+                scene.persons.map((person, i) => (
+                  <div key={i} className="scene-card-person">
+                    <div> Clothes: {capitalizeFirstLetter(person.clothes)}</div>
+                    <div>
+                      {" "}
+                      {person.gender != "unsure" &&
+                        `Gender: ${capitalizeFirstLetter(person.gender)}`}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+          <div className="scene-card-content">
+            <strong>🚗 Vehicles: </strong>
+            {scene.vehicles.length}
+            <div>
+              {scene.vehicles.length > 0 &&
+                scene.vehicles.map((vehicle, i) => (
+                  <div key={i} className="scene-card-vehicle">
+                    <div> Type: {capitalizeFirstLetter(vehicle.type)} </div>
+                    <div> Color: {capitalizeFirstLetter(vehicle.color)} </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
 }
 
 function App() {
-  const [scenes, setScenes] = useState<Scene[]>([]);
+  const [sceneData, setSceneData] = useState<SceneData | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(false);
 
   const getLatestScene = async () => {
+    setIsLoading(true);
     console.log("Getting latest scene...");
-    const response = await fetch("http://localhost:5173/scene");
-    const jsonResponse = await response.json();
-    const newScene = jsonResponse.data;
-    console.log(newScene);
-    setScenes((scenes) => [newScene, ...scenes]);
+    let newSceneData = null;
+
+    try {
+      const response = await fetch("http://localhost:5173/scene");
+      const jsonResponse = await response.json();
+      newSceneData = jsonResponse.scene_data;
+      console.log(newSceneData);
+    } catch (error) {
+      console.error("Error fetching scene: ", error);
+    } finally {
+      setIsLoading(false);
+      setVisible(false);
+      setSceneData(newSceneData);
+      setTimeout(() => setVisible(true), 400);
+    }
   };
 
   // useEffect runs a function every time that a set of dependencies changes
@@ -82,14 +129,18 @@ function App() {
 
   return (
     <>
-      <h1>CCTV Logger</h1>
-      <div className="card">
+      <div className="header">
+        <h1>CCTV Logger</h1>
         <button className="button" onClick={getLatestScene}>
-          Get log
+          {isLoading ? (
+            <i className="fas fa-spinner fa-spin" />
+          ) : (
+            <i className="fas fa-sync-alt" />
+          )}
         </button>
-        <br />
-        <SceneLog scenes={scenes} />
       </div>
+      <br />
+      {sceneData && <SceneCard sceneData={sceneData} visible={visible} />}
     </>
   );
 }

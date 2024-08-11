@@ -11,12 +11,14 @@ class CCTVLoggerServer(resource.Resource):
     client = MongoClient()
 
     def render_GET(self, request):
-        scene = self.client.get_latest_scene()
-        response = {"data": scene}
+        scene_data = self.client.get_latest_scene()
+        # repeated_counts = self._check_repeated()
+        response = {
+            "scene_data": scene_data,
+            # "repeated_counts": repeated_counts
+        }
         request.setHeader("Content-Type", "application/json")
-        # warning: remove in production!
-        request.setHeader("Access-Control-Allow-Origin", "*")
-        return json.dumps(response).encode("utf-8")
+        return json.dumps(response, default=str).encode("utf-8")
 
     def _check_repeated(self, start_time=None, end_time=None, thresh=5):
         """
