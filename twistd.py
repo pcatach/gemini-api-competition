@@ -32,7 +32,7 @@ from twisted.web import server
 
 from src.services import CCTVLoggerRunner, CCTVLoggerServer
 
-TIME_INTERVAL = 10
+TIME_INTERVAL = 5
 
 logging.basicConfig(level=logging.INFO)
 

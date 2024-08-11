@@ -117,7 +117,7 @@ function App() {
   useEffect(() => {
     // setInterval calls a function repeatedly with a time delay
     // it returns an interval ID that uniquely identifies that interval
-    const interval = setInterval(getLatestScene, 10000);
+    const interval = setInterval(getLatestScene, 5000);
     // clearInterval can be called using the interval ID to cancel the interval
     // useEffect should return a callback to be invoked as cleanup
     return () => clearInterval(interval);

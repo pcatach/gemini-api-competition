@@ -84,9 +84,11 @@ We use the [Twisted Application Framework](https://docs.twisted.org/en/stable/co
 $ GOOGLE_API_KEY=$(cat .api_token) /path/to/.venv/bin/twistd --python twistd.py --nodaemon
 ```
 
-TODO:
+Use
 
-- [ ] Write service that takes picture, sends to model, stores in the db
-- [ ] Write service that replies to HTTP requests
-- [ ] Write client
-- [ ] Add method to use `1.0` to take a description and convert it to JSON (not sure if possible or useful, but 1.0 is cheaper)
+```bash
+cd client/
+npm run dev
+```
+
+to run the frontend.
