@@ -92,3 +92,7 @@ npm run dev
 ```
 
 to run the frontend.
+
+## TODO
+
+- [ ] Rewrite using a modern asynchronous framework like [aiohttp](https://docs.aiohttp.org/en/stable/)
